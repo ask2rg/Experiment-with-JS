@@ -87,16 +87,6 @@
             animation: blinker 1s linear infinite;
         }
 
-        @keyframes blinker {
-            25% {
-                opacity: 0;
-            }
-
-            60% {
-                opacity: 1;
-            }
-        }
-
         .glowx {
             color: #fff !important;
             text-align: center;
@@ -122,6 +112,18 @@
 
             to {
                 text-shadow: 0 0 10px #fff, 0 0 20px #00bcd4, 0 0 30px #12d9b9, 0 0 35px #03a9f4, 0 0 40px #10deb4, 0 0 48px #0dd2d1, 0 0 55px #10deb4;
+            }
+        }
+
+
+
+        @keyframes blinker {
+            25% {
+                opacity: 0;
+            }
+
+            60% {
+                opacity: 1;
             }
         }
     </style>
@@ -222,271 +224,283 @@
             </div>
         </div>
     </div>
-    <script>
-        // var board = { "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9" };
+</body>
 
-        let board = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+<script>
+    // var board = { "1": "1", "2": "2", "3": "3", "4": "4", "5": "5", "6": "6", "7": "7", "8": "8", "9": "9" };
 
-        const symb = ["✘", "♜"];
-        let moves = 0;
-        let isGameFinished = false;
-        let p1 = "";
-        let p2 = "";
-        let activePlayer = "none";
-        let difficultyLevel = "Easy";
-        let isSinglePlayer = false;
-        // for bot AI move
-        let bestMove = { player1: [], player2: [] };
+    let board = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-        const winSvg = '<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="32px" viewBox="0 0 24 24" width="32px" fill="#ff9800" style="&#10;vertical-align: middle;&#10;"><g><rect fill="none" height="24" width="24"/></g><g><g><path d="M17,10.43V2H7v8.43c0,0.35,0.18,0.68,0.49,0.86l4.18,2.51l-0.99,2.34l-3.41,0.29l2.59,2.24L9.07,22L12,20.23L14.93,22 l-0.78-3.33l2.59-2.24l-3.41-0.29l-0.99-2.34l4.18-2.51C16.82,11.11,17,10.79,17,10.43z M11,11.07l-2-1.2V4h2V11.07z M15,9.87 l-2,1.2V4h2V9.87z"/></g></g></svg>'
+    const symb = ["✘", "♜"];
+    let moves = 0;
+    let isGameFinished = false;
+    let p1 = "";
+    let p2 = "";
+    let activePlayer = "none";
+    let difficultyLevel = "Easy";
+    let isSinglePlayer = false;
+    // for bot AI move
+    let bestMove = { player1: [], player2: [] };
 
-        // home screen options
+    const winSvg = '<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="32px" viewBox="0 0 24 24" width="32px" fill="#ff9800" style="&#10;vertical-align: middle;&#10;"><g><rect fill="none" height="24" width="24"/></g><g><g><path d="M17,10.43V2H7v8.43c0,0.35,0.18,0.68,0.49,0.86l4.18,2.51l-0.99,2.34l-3.41,0.29l2.59,2.24L9.07,22L12,20.23L14.93,22 l-0.78-3.33l2.59-2.24l-3.41-0.29l-0.99-2.34l4.18-2.51C16.82,11.11,17,10.79,17,10.43z M11,11.07l-2-1.2V4h2V11.07z M15,9.87 l-2,1.2V4h2V9.87z"/></g></g></svg>'
 
-        function gameMode(typ) {
-            scrHome1.style.display = "none";
-            if (typ == 1) {
-                p2 = "Computer";
-                isSinglePlayer = true;
-                scrHome2.style.display = "block";
-            } else {
-                isSinglePlayer = false;
-                player2_set_name.style.display = "block";
-                scrhome3.style.display = "block";
-            }
-        }
+    // home screen options
 
-        function setDifficultyLvl(typ) {
-            console.log("a");
-            scrHome2.style.display = "none";
-            if (typ == 1) {
-                difficultyLevel = "Easy";
-            } else if (typ == 2) {
-                difficultyLevel = "Medium";
-            } else if (typ == 3) {
-                difficultyLevel = "Hard";
-            }
-
-            player2_set_name.style.display = "none";
+    function gameMode(typ) {
+        scrHome1.style.display = "none";
+        if (typ == 1) {
+            p2 = "Computer";
+            isSinglePlayer = true;
+            scrHome2.style.display = "block";
+        } else {
+            isSinglePlayer = false;
+            player2_set_name.style.display = "block";
             scrhome3.style.display = "block";
         }
+    }
 
-        function getPlayersName() {
-            p1 = player1_set_name.innerText.toUpperCase();
-            if (isSinglePlayer == false)
-                p2 = player2_set_name.innerText.toUpperCase();
-
-
-            if (p1.trim() == '')
-                p1 = "Player 1";
-            if (p2.trim() == '')
-                p2 = "Player 2";
-
-            activePlayer = p1;
-            scrhome3.style.display = "none";
-            screen_play_game.style.display = "block";
-            newGame();
-        }
-
-        function gameReset() {
-            scrHome1.style.display = "block";
-            scrHome2.style.display = "none";
-            scrhome3.style.display = "none";
-            player2_set_name.style.display = "block";
-            player1_set_name.querySelector(".btn").innerHTML = "player 1"; player2_set_name.querySelector(".btn").innerHTML = "player 2";
-
-            screen_play_game.style.display = "none";
-            p1 = "";
-            p2 = "";
-            activePlayer = "none";
+    function setDifficultyLvl(typ) {
+        console.log("a");
+        scrHome2.style.display = "none";
+        if (typ == 1) {
             difficultyLevel = "Easy";
-            isSinglePlayer = false;
-
+        } else if (typ == 2) {
+            difficultyLevel = "Medium";
+        } else if (typ == 3) {
+            difficultyLevel = "Hard";
         }
 
-        function newGame() {
-            moves = 0;
-            isGameFinished = false;
-            bestMove = { player1: [], player2: [] };
-            board = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-            for (let i = 1; i <= 9; i++) {
-                let elm = document.querySelector(".box[data-pos='" + i + "']");
-                if (elm.classList.contains('player2-fill'))
-                    elm.classList.remove('player2-fill');
-                if (elm.classList.contains('player1-fill'))
-                    elm.classList.remove('player1-fill');
-                if (elm.classList.contains('blink_me'))
-                    elm.classList.remove('blink_me');
+        player2_set_name.style.display = "none";
+        scrhome3.style.display = "block";
+    }
+
+    function getPlayersName() {
+        p1 = player1_set_name.innerText.toUpperCase();
+        if (isSinglePlayer == false)
+            p2 = player2_set_name.innerText.toUpperCase();
+
+
+        if (p1.trim() == '')
+            p1 = "Player 1";
+        if (p2.trim() == '')
+            p2 = "Player 2";
+
+        activePlayer = p1;
+        scrhome3.style.display = "none";
+        screen_play_game.style.display = "block";
+        newGame();
+    }
+
+    function gameReset() {
+        scrHome1.style.display = "block";
+        scrHome2.style.display = "none";
+        scrhome3.style.display = "none";
+        player2_set_name.style.display = "block";
+        player1_set_name.querySelector(".btn").innerHTML = "player 1"; player2_set_name.querySelector(".btn").innerHTML = "player 2";
+
+        screen_play_game.style.display = "none";
+        p1 = "";
+        p2 = "";
+        activePlayer = "none";
+        difficultyLevel = "Easy";
+        isSinglePlayer = false;
+
+    }
+
+    function newGame() {
+        moves = 0;
+        isGameFinished = false;
+        bestMove = { player1: [], player2: [] };
+        board = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        for (let i = 1; i <= 9; i++) {
+            let elm = document.querySelector(".box[data-pos='" + i + "']");
+            if (elm.classList.contains('player2-fill'))
+                elm.classList.remove('player2-fill');
+            if (elm.classList.contains('player1-fill'))
+                elm.classList.remove('player1-fill');
+            if (elm.classList.contains('blink_me'))
+                elm.classList.remove('blink_me');
+        }
+        if (isSinglePlayer && activePlayer == p2 && p2 == "Computer") {
+            computersTurn();
+        } else {
+            gameMessage.innerHTML = colortext(activePlayer) + " its your turn";
+        }
+    }
+
+    function randMove(d) {
+        let ls = [];
+        for (let i of d) {
+            if (i != symb[0] && i != symb[1]) ls.push(i);
+        }
+        return ls[Math.floor(Math.random() * ls.length)];
+    }
+
+    function computersTurn() {
+        var pos;
+        if (difficultyLevel == "Easy") {
+            pos = randMove(board);
+        } else if (difficultyLevel == "Medium") {
+            pos = difMedium();
+        } else if (difficultyLevel == "Hard") {
+            if (moves <= 1) {
+                if (symb.indexOf(board[5 - 1]) < 0) {
+                    pos = 5;
+                } else {
+                    let corners = [1, 3, 7, 9];
+                    pos = randMove(corners);
+                }
+            } else {
+                pos = difMedium();
             }
-            if (isSinglePlayer && activePlayer == p2 && p2 == "Computer") {
+
+        }
+        var elm = document.querySelector(".box[data-pos='" + pos + "']");
+
+        handelInput(pos, elm);
+    }
+
+
+
+    function difMedium() {
+        let winCases = [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9],
+            [1, 4, 7],
+            [2, 5, 8],
+            [3, 6, 9],
+            [1, 5, 9],
+            [3, 5, 7],
+        ];
+
+        bestMove["player1"] = [];
+        bestMove["player2"] = [];
+
+        for (let i of winCases) {
+            // check if any two pos. same and 3rd null
+            let a = i[0] - 1,
+                b = i[1] - 1,
+                c = i[2] - 1;
+            if (board[a] == board[b] && symb.indexOf(board[c]) < 0) {
+                // add pos to bestMove list for relative player
+                if (board[a] == symb[0])
+                    bestMove["player1"].push(c + 1);
+                else
+                    bestMove["player2"].push(c + 1);
+            } else if (board[a] == board[c] && symb.indexOf(board[b]) < 0) {
+                if (board[a] == symb[0]) bestMove["player1"].push(b + 1);
+                else bestMove["player2"].push(b + 1);
+            } else if (board[b] == board[c] && symb.indexOf(board[a]) < 0) {
+                if (board[b] == symb[0])
+                    // update 1 insted of 0
+                    bestMove["player1"].push(a + 1);
+                else bestMove["player2"].push(a + 1);
+            }
+        }
+        // first try to win by done 3 match
+        console.log(bestMove);
+        if (bestMove["player2"].length > 0) return randMove(bestMove["player2"]);
+        // else Try to stop the opponent from winning
+        else if (bestMove["player1"].length > 0) return randMove(bestMove["player1"]);
+        // else random move
+        else {
+            let corners = [1, 3, 7, 9];
+            let co = 0;
+            for (let i in corners) {
+                if (board[corners[i] - 1] == symb[0]) co++
+            }
+            if (co >= 2) {
+                corners = [2, 4, 6, 8];
+                return randMove(corners);
+            }
+            return randMove(board);
+        }
+
+    }
+
+
+    function startBlink(ls) {
+        for (let i of ls) {
+            let elm = document.querySelector(".box[data-pos='" + i + "']");
+            if (!elm.classList.contains('blink_me'))
+                elm.classList.add('blink_me');
+        }
+
+
+    }
+
+    function handelInput(pos, elm) {
+        if (board[pos - 1] == symb[0] || board[pos - 1] == symb[1] || isGameFinished)
+            return;
+
+        moves++;
+
+        if (activePlayer == p1) {
+            elm.classList.add('player1-fill');
+            board[pos - 1] = symb[0];
+            activePlayer = p2;
+        } else {
+            elm.classList.add('player2-fill');
+            board[pos - 1] = symb[1];
+            activePlayer = p1;
+        }
+        isWinner();
+    }
+
+
+    function isWinner() {
+        let winCases = [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9],
+            [1, 4, 7],
+            [2, 5, 8],
+            [3, 6, 9],
+            [1, 5, 9],
+            [3, 5, 7],
+        ];
+
+
+        let winplayer = false;
+
+        for (let i of winCases) {
+            let a = i[0] - 1,
+                b = i[1] - 1,
+                c = i[2] - 1;
+
+            if (board[a] == board[b] && board[b] == board[c]) {
+                winplayer = true;
+                startBlink(i);
+                if (activePlayer == p1) {
+                    gameMessage.innerHTML = " Winner: " + winSvg + " " + colortext(p2) + " ";
+                    isGameFinished = true;
+                } else {
+                    gameMessage.innerHTML = " Winner: " + winSvg + " " + colortext(p1) + " ";
+                    isGameFinished = true;
+                }
+                break;
+            }
+        }
+
+        if (winplayer == false) {
+            if (moves == 9) {
+                gameMessage.innerHTML = ">> Game Draw <<";
+                isGameFinished = true;
+            } else if (isSinglePlayer && activePlayer == p2 && p2 == "Computer") {
                 computersTurn();
             } else {
                 gameMessage.innerHTML = colortext(activePlayer) + " its your turn";
             }
         }
+    }
 
-        function randMove(d) {
-            let ls = [];
-            for (let i of d) {
-                if (i != symb[0] && i != symb[1]) ls.push(i);
-            }
-            return ls[Math.floor(Math.random() * ls.length)];
-        }
-
-        function computersTurn() {
-            var pos;
-            if (difficultyLevel == "Easy") {
-                pos = randMove(board);
-            } else if (difficultyLevel == "Medium") {
-                pos = difMedium();
-            } else if (difficultyLevel == "Hard") {
-                if (moves <= 1) {
-                    if (symb.indexOf(board[5 - 1]) < 0) {
-                        pos = 5;
-                    } else {
-                        let corners = [1, 3, 7, 9];
-                        pos = randMove(corners);
-                    }
-                } else {
-                    pos = difMedium();
-                }
-
-            }
-            var elm = document.querySelector(".box[data-pos='" + pos + "']");
-
-            handelInput(pos, elm);
-        }
-
-
-
-        function difMedium() {
-            let winCases = [
-                [1, 2, 3],
-                [4, 5, 6],
-                [7, 8, 9],
-                [1, 4, 7],
-                [2, 5, 8],
-                [3, 6, 9],
-                [1, 5, 9],
-                [3, 5, 7],
-            ];
-
-            bestMove["player1"] = [];
-            bestMove["player2"] = [];
-
-            for (let i of winCases) {
-                // check if any two pos. same and 3rd null
-                let a = i[0] - 1,
-                    b = i[1] - 1,
-                    c = i[2] - 1;
-                if (board[a] == board[b] && symb.indexOf(board[c]) < 0) {
-                    // add pos to bestMove list for relative player
-                    if (board[a] == symb[0])
-                        bestMove["player1"].push(c + 1);
-                    else
-                        bestMove["player2"].push(c + 1);
-                } else if (board[a] == board[c] && symb.indexOf(board[b]) < 0) {
-                    if (board[a] == symb[0]) bestMove["player1"].push(b + 1);
-                    else bestMove["player2"].push(b + 1);
-                } else if (board[b] == board[c] && symb.indexOf(board[a]) < 0) {
-                    if (board[b] == symb[0])
-                        // update 1 insted of 0
-                        bestMove["player1"].push(a + 1);
-                    else bestMove["player2"].push(a + 1);
-                }
-            }
-            // first try to win by done 3 match
-            console.log(bestMove);
-            if (bestMove["player2"].length > 0) return randMove(bestMove["player2"]);
-            // else Try to stop the opponent from winning
-            else if (bestMove["player1"].length > 0) return randMove(bestMove["player1"]);
-            // else random move
-            else
-                return randMove(board);
-        }
-
-
-        function startBlink(ls) {
-            for (let i of ls) {
-                let elm = document.querySelector(".box[data-pos='" + i + "']");
-                if (!elm.classList.contains('blink_me'))
-                    elm.classList.add('blink_me');
-            }
-
-
-        }
-
-        function handelInput(pos, elm) {
-            if (board[pos - 1] == symb[0] || board[pos - 1] == symb[1] || isGameFinished)
-                return;
-
-            moves++;
-
-            if (activePlayer == p1) {
-                elm.classList.add('player1-fill');
-                board[pos - 1] = symb[0];
-                activePlayer = p2;
-            } else {
-                elm.classList.add('player2-fill');
-                board[pos - 1] = symb[1];
-                activePlayer = p1;
-            }
-            isWinner();
-        }
-
-
-        function isWinner() {
-            let winCases = [
-                [1, 2, 3],
-                [4, 5, 6],
-                [7, 8, 9],
-                [1, 4, 7],
-                [2, 5, 8],
-                [3, 6, 9],
-                [1, 5, 9],
-                [3, 5, 7],
-            ];
-
-
-            let winplayer = false;
-
-            for (let i of winCases) {
-                let a = i[0] - 1,
-                    b = i[1] - 1,
-                    c = i[2] - 1;
-
-                if (board[a] == board[b] && board[b] == board[c]) {
-                    winplayer = true;
-                    startBlink(i);
-                    if (activePlayer == p1) {
-                        gameMessage.innerHTML = " Winner: " + winSvg + " " + colortext(p2) + " ";
-                        isGameFinished = true;
-                    } else {
-                        gameMessage.innerHTML = " Winner: " + winSvg + " " + colortext(p1) + " ";
-                        isGameFinished = true;
-                    }
-                    break;
-                }
-            }
-
-            if (winplayer == false) {
-                if (moves == 9) {
-                    gameMessage.innerHTML = ">> Game Draw <<";
-                    isGameFinished = true;
-                } else if (isSinglePlayer && activePlayer == p2 && p2 == "Computer") {
-                    computersTurn();
-                } else {
-                    gameMessage.innerHTML = colortext(activePlayer) + " its your turn";
-                }
-            }
-        }
-
-        function colortext(plyr) {
-            if (plyr == p1)
-                return '<span style="color:#f5f5dc">' + p1 + '</span>';
-            else
-                return '<span style="color:#00bcd4">' + p2 + '</span>';
-        }
-    </script>
-</body>
+    function colortext(plyr) {
+        if (plyr == p1)
+            return '<span style="color:#f5f5dc">' + p1 + '</span>';
+        else
+            return '<span style="color:#00bcd4">' + p2 + '</span>';
+    }
+</script>
 
 </html>
