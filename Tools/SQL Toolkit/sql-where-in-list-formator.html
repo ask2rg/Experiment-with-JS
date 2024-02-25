@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL tool - where in list formator</title>
+    <style>
+        .input-area {
+            width: 100%;
+            height: 100px;
+        }
+
+        .option-set {
+            display: flex;
+            column-gap: 28px;
+            margin-top: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>SQL Text toolkit</h1>
+    <p> Simple SQL tool for format copied list of items from Excel so can use in sql where in clause like - Select *
+        from myTbl where names in ("item1", "item2")</p>
+    <p>if you have a list of ids in excel and create a query to filter these record, convert excel column to csv, or add
+        pre and post fix</p>
+    <textarea row="5" class="input-area">
+</textarea>
+    <div class="option-set">
+        <button onclick="addPrefixPostfix()">Add prefix and postfix </button>
+        <div>prefix : <input id="prefixInput" value='"' type="text" placeholder="Enter Prefix" /></div>
+        <div>postfix : <input id="postfixInput" type="text" placeholder="Enter Postfix" value='",' /></div>
+    </div>
+
+    <div class="option-set">
+        <button onclick="removeLinebreak()">Replace Line Break</button>
+        <div> with : <input id="lineBreakInput" type="text" placeholder="Empty" value=' ' /></div>
+    </div>
+
+    <script>
+        let inputArea = document.querySelector('.input-area')
+
+        function addPrefixPostfix() {
+            let raw = inputArea.value
+            let rawlist = raw.split(/\r?\n|\r|\n/g)
+            let prefix = document.getElementById('prefixInput').value;// '"'
+            let postfix = document.getElementById('postfixInput').value; //'",'
+            let data = rawlist.map((item) => prefix + item + postfix).join('\n')
+            inputArea.value = data
+        }
+
+        function removeLinebreak() {
+            let raw = inputArea.value
+            let rawlist = raw.split(/\r?\n|\r|\n/g)
+            let linkbreak = document.getElementById('lineBreakInput').value;
+            let data = rawlist.join(linkbreak)
+            inputArea.value = data
+        }
+    </script>
+</body>
+
+</html>
