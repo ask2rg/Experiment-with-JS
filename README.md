@@ -8,3 +8,9 @@
 
 [PDF with Custom font (hindi - krutidev devlys) ](https://ask2rg.github.io/Experiment-with-JS/Demo%20-%20jsPDF%20with%20Custom%20font%20(hindi%20-%20krutidev%20%20devlys)/demo.html) - (JS jsPDF)
 
+[SQL Toolkit - where in list formator](https://ask2rg.github.io/Experiment-with-JS/Tools/SQL%20Toolkit/sql-where-in-list-formator.html) - (Simple SQL tool for format copied list of items from Excel so can use in sql where in clause like
+
+
+
+Tools/
+
