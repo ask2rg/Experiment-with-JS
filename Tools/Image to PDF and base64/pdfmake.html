@@ -1,0 +1,161 @@
+<!-- Written by Ravi Agarwal (github: ask2rg) -->
+<!-- blog : unexpectedweb.blogspot.com -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pdfmake js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.40/pdfmake.min.js"></script>
+    <style>
+        body{
+            margin:28px
+        }
+        .action-btns, .result-base64-img-data{
+            display:none;
+        }
+        .action-btns.active{
+            display: flex;
+            margin-top: 2rem;
+        }
+        .result-base64-img-data.active{
+            display: block;
+            margin-top: 2rem;
+        }
+        .result-base64-img-data textarea{
+            padding: 12px 8px;
+            font-size: 14px;
+            width:100%;
+            height: 120px;
+            line-height: 1.4;
+        }
+
+        .action-btns button{
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            background: #1565C0;
+            color: #fff;
+            outline: none;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #3498db;
+            width: 22px;
+            height: 22px;
+            animation: spin 1s linear infinite;
+            margin: 0px 12px;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Image to PDF / base64</h1>
+    </br>
+    <h2>Please select a image file :</h2>
+    <input type="file" id="imageInput" accept="image/*" onchange="readyToAction()">
+    </br>
+    <div class="action-btns">
+        <button onClick="getImgToBase64()">Get Base64 Data URL</button>
+        <button onClick="getImgToPDF()">Convert Image to PDF</button>
+        <div class="spinner pdf-generating"></div>
+    </div>
+    <div class="result-base64-img-data">
+        <h3>base64 Image :</h3>
+        <textarea></textarea>
+    </div>
+    <script>
+
+        const input = document.getElementById('imageInput');
+
+        function readyToAction(){
+            document.querySelector('.result-base64-img-data').classList.remove('active')
+            if (input.files && input.files[0]) {
+                document.querySelector('.action-btns').classList.add('active')
+            }else{
+                document.querySelector('.action-btns').classList.remove('active')
+            }
+        }
+
+        function convertImageToBase64() {
+            return new Promise((resolve, reject) => {
+                if (input.files && input.files[0]) {
+                    let reader = new FileReader();
+                    reader.onload = function (e) {
+                        const base64String = e.target.result;
+                        resolve(base64String);
+                    };
+                    reader.onerror = function (error) {
+                        reject(error);
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            });
+        }
+
+
+        function getImageHeightWidthByURL(imgPath){
+            return new Promise((resolve, reject)=>{
+                const img = new Image();
+                img.src = imgPath;
+
+                img.onload = function () {
+                    const width = img.width;
+                    const height = img.height;
+                    resolve({width, height})
+                };
+
+                img.onerror = function(error){
+                    reject(error)
+                }
+            })
+        }
+
+
+        function getImgToBase64(){
+            convertImageToBase64()
+            .then( (bs64Img)=>{ // .then take a func
+                document.querySelector('.result-base64-img-data textarea').innerHTML = bs64Img;
+                document.querySelector('.result-base64-img-data').classList.add('active')
+            });
+        }
+
+        async function getImgToPDF() {
+            let imgBs64 = await convertImageToBase64()
+            document.querySelector('.spinner.pdf-generating').style.display = 'inline-block'
+            const docDefinition = {
+                content: [
+                    {
+                        alignment: 'center',
+                        margin: [0, 0],
+                        image: imgBs64
+                    }
+                   
+                ],
+                pageSize:  await getImageHeightWidthByURL(imgBs64),  // { width: 1450, height: 2030 },
+                pageMargins: [0,0,0,0]
+            };
+
+
+            const pdf = createPdf(docDefinition);
+            let filename = input.files[0].name || 'convert_image_to_pdf_output'
+            pdf.download(`${filename}.pdf`);
+            document.querySelector('.spinner.pdf-generating').style.display = 'none'
+        }
+    </script>
+</body>
+
+</html>
