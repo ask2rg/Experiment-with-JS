@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Practice</title>
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            background-color: #f6f6f7;
+        }
+
+        .title {
+            text-align: center;
+            font-family: sans-serif;
+            color: #1b1b20;
+            font-size: 36px;
+            margin-top: 58px;
+            margin-bottom: 62px;
+        }
+
+        #type,
+        #input {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            font-size: 38px;
+            font-family: Merriweather, serif;
+            color: #19191d;
+            margin-top: 32px;
+        }
+
+        #type {
+            padding: 17px;
+            border: 1px solid rgb(209, 205, 205);
+            width: 822px;
+            height: 159px;
+            outline: none;
+            resize: none;
+        }
+
+        table.analysis-key {
+            margin-top: 22px;
+            font-family: sans-serif;
+            border-collapse: collapse;
+            width: 288px;
+            text-align: center;
+        }
+
+        table.analysis-key tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+
+        table.analysis-key td,
+        th {
+            border: 1px solid #dddddd;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="title">English Typing Practice</h1>
+        <div style="display: flex; flex-direction: column;">
+            <div id="input"></div>
+            <textarea id="type" onkeyup="keyType()"></textarea>
+            <div style="width: 822px; margin: 20px auto; display: flex;">
+                <div
+                    style="font-size: 22px; font-family: sans-serif; padding: 12px 22px; background: #fcecbf; margin-right: auto;">
+                    <span>Backspace</span><span id="bskCount"
+                        style="display: inline-block; width: 92px; text-align: center; color: #e90808;">0</span>
+                </div>
+                <div
+                    style="font-size: 22px; font-family: sans-serif; padding: 12px 22px; background: #fcecbf; margin-right: auto;">
+                    <span>Speed (wpm)</span><span id="speed"
+                        style="display: inline-block; width: 92px; text-align: center;">0</span>
+                </div>
+            </div>
+            <div style="width: 822px; margin: 20px auto;">
+                <!-- <button onclick="ShowGptPrompt()" style="padding: 8px 12px; font-size: 14px; font-family: sans-serif; font-weight: 500; background: #1b1c1c; color: #fff; letter-spacing: 0.05rem; border: navajowhite; border-radius: 4px; cursor: pointer;">Show GPT Prompt for Analysis</button> -->
+                <div style="display: flex; justify-content: space-between;">
+                    <button onclick="ShowAnalysis(true)"
+                        style="padding: 8px 12px; font-size: 14px; font-family: sans-serif; font-weight: 500; background: #1b1c1c; color: #fff; letter-spacing: 0.05rem; border: navajowhite; border-radius: 4px; cursor: pointer;">Show
+                        Analysis</button> <button
+                        onclick="localStorage.setItem('typeHist', '[]'); if(typeHist){typeHist = [];} alert('Your typing history is deleted.')"
+                        style="padding: 8px 12px; font-size: 14px; font-family: sans-serif; font-weight: 500; background: #1b1c1c; color: #fff; letter-spacing: 0.05rem; border: navajowhite; border-radius: 4px; cursor: pointer;">Clear
+                        Typing History</button>
+                </div>
+                <div id="gptPrompt"></div>
+            </div>
+        </div>
+
+
+
+    </div>
+    <script>
+        let startTime = 0
+        let lastTime = 0
+        let lastIncorrectCount = 0
+        let totalTime = 0
+        let totalChar = 0
+        let typeHist = []
+        let keyCount = 0
+        let bsKeyCount = 0;
+        let wordLen = 7
+        let keyScore = {}
+        let praticeCharLen = 120
+        let praticeCharStr = ''
+
+        // load hist
+        let prevHist = localStorage.getItem("typeHist");
+        if (prevHist) {
+            try {
+                typeHist = JSON.parse(prevHist)
+            } catch (err) {
+                typeHist = []
+            }
+        }
+
+        const chars = 'abcdefghijklmnopqrstuvwxyz,.- ';
+
+        window.addEventListener('keyup', (event) => {
+            if (event.key === 'Backspace') {
+                bsKeyCount++
+            } else {
+                keyCount++;
+            }
+            document.getElementById('bskCount').innerText = bsKeyCount
+        });
+
+        function generateShuffledString() {
+            let charSet = chars + praticeCharStr
+            let spaceCount = Math.floor(Math.random() * ((charSet.length / 7) - 4)) + 4; // Random number of spaces between 4 and N
+            let spaceArray = Array(spaceCount).fill(' '); // Array with the required number of spaces
+
+
+
+            let allChars = (chars + spaceArray.join('')).split('');
+
+            for (let i = allChars.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allChars[i], allChars[j]] = [allChars[j], allChars[i]];
+            }
+
+            document.getElementById('type').value = ''
+            document.getElementById('input').innerHTML = allChars.join('');
+            document.getElementById('gptPrompt').innerText = ''
+            startTime = 0
+            lastTime = 0
+            lastIncorrectCount = 0
+            //document.getElementById('type').focus();
+        }
+        generateShuffledString()
+
+
+        function ShowAnalysis(display = false) {
+            praticeCharStr = ''
+            let keySet = {}
+            let keySetAccu = {}
+            let totalScore = 0
+            chars.split('').forEach((k) => [
+                keySet[k] = 0
+            ])
+            let missType = {}
+            typeHist.forEach((ks) => {
+                if (ks?.incorrect_attempt) {
+                    if (missType?.[ks.key]) {
+                        missType[ks.key] += ks.incorrect_attempt
+                    } else {
+                        missType[ks.key] = ks.incorrect_attempt
+                    }
+                }
+                let score = ks.wait_time * ((ks.incorrect_attempt + 1) * 2)
+                keySet[ks.key] += score
+                if (keySetAccu?.[ks.key]) {
+                    keySetAccu[ks.key][0] += ks.incorrect_attempt
+                    keySetAccu[ks.key][1] += 1
+                    keySetAccu[ks.key][2] = Math.floor((keySetAccu[ks.key][1] / (keySetAccu[ks.key][0] + keySetAccu[ks.key][1])) * 100)
+                } else {
+                    keySetAccu[ks.key] = [ks.incorrect_attempt, 1, Math.floor(100 / (ks.incorrect_attempt + 1))]
+                }
+
+                totalScore += score
+            })
+            for (k in keySet) {
+                let sv = Math.floor(100 - (keySet[k] * 100 / totalScore))
+                keySet[k] = sv
+                let svCharCount = Math.floor(praticeCharLen * (100 - sv) / 100)
+                praticeCharStr += k.repeat(svCharCount)
+            }
+            praticeCharLen += 12
+            let objectArray = Object.entries(keySet);
+            objectArray.sort((a, b) => a[1] - b[1]);
+            let sortedObject = Object.fromEntries(objectArray);
+            keyScore = sortedObject
+            if (display == true) {
+                htmlbody = ''
+                for (k in keyScore) {
+                    htmlbody += `<tr> <td>${k}</td> <td>${keyScore[k]}</td> <td>${keySetAccu?.[k]?.[2] || ''}</td></tr>`
+                }
+                let htmlTbl = `
+                    <table class="analysis-key">
+                        <thead>
+                            <tr>
+                                <th>Key Value</th>
+                                <th>Score</th>
+                                <th>Acuracy %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           ${htmlbody}
+                        </tbody>
+                    </table>
+                    `
+
+                let htmlbody2 = ''
+                for (k in missType) {
+                    htmlbody2 += `<tr> <td>${k}</td> <td>${missType[k]}</td> </tr>`
+                }
+                let htmlTbl2 = `
+                    <table class="analysis-key">
+                        <thead>
+                            <tr>
+                                <th>Key</th>
+                                <th>Miss Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           ${htmlbody2}
+                        </tbody>
+                    </table>
+                    `
+                document.getElementById('gptPrompt').innerHTML = `<div style="display: flex; align-items: flex-start; justify-content: flex-start; column-gap: 1.4rem;"> ${htmlTbl} ${htmlTbl2} </div>`
+            }
+
+        }
+
+        // function ShowGptPrompt(){
+        //     let prompt = `You are an intelligent system designed to help the user improve typing skills, you will analyze each key stroke. Below are 3 factors you will consider to analyze user's weakness and strength \n 
+        //         1. What key does the user press - "key" \n
+        //         2. How long does it take for the user to think and press that key - "wait_time" \n
+        //         3. How many times does the user press the wrong key before pressing that key - "incorrect_attempt" \n\n
+
+        //         You must provide the output according to these rules: \n
+        //         1. The output should be in table format with 2 columns "key" and "score" \n
+        //         2. Key colum contaion these chars - "abcdefghijklmnopqrstuvwxyz,.- " \n
+        //         3. For each key scorefrom 0 to 100 will be assigned based on the analysis of the above 3 factors \n
+        //         4. The table will be sorted in ascending order based on the score \n
+        //         Note : you not need to explain anything just provide output table \n\n
+
+        //         Below is the users data of each key press having all 3 factors - key, wait_time, incorrect_attempt \n\n
+
+        //         ${JSON.stringify(typeHist)}`
+        //     document.getElementById('gptPrompt').innerText = prompt
+        //     copyToClipboard(prompt)
+        // }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Prompt copied to clipboard');
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+        function keyType() {
+            document.getElementById('gptPrompt').innerText = ''
+            let input = document.getElementById('input')
+            let type = document.getElementById('type')
+            if (startTime == 0) {
+                startTime = Date.now()
+                lastTime = startTime
+            }
+
+            let waittime = Date.now() - lastTime
+            let str1 = input.innerText.substr(0, (type.value.length));
+            let str2 = type.value;
+            if (str1 == str2 && str1 != '') {
+                totalChar++
+                totalTime += waittime
+                typeHist.push({
+                    "key": str2[str2.length - 1],
+                    "wait_time": waittime,
+                    "incorrect_attempt": lastIncorrectCount
+                })
+                localStorage.setItem("typeHist", JSON.stringify(typeHist))
+                document.getElementById('speed').innerText = Math.round((totalChar / wordLen) / (totalTime / 60000) * 10) / 10
+                lastIncorrectCount = 0
+                lastTime = Date.now()
+            } else {
+
+                let correctStr = ''
+                for (let i = 0; i < str2.length; i++) {
+                    if (str2[i] != str1[i]) {
+                        break
+                    }
+                    correctStr += str2[i]
+                }
+                type.value = correctStr
+                wc = (str2.length - correctStr.length) || 1
+                bsKeyCount += wc
+                lastIncorrectCount += wc
+            }
+
+            if (input.innerText == str2) {
+                ShowAnalysis()
+                generateShuffledString()
+            }
+
+
+        }
+
+    </script>
+</body>
+
+</html>
