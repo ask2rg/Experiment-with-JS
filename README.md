@@ -10,7 +10,6 @@
 
 [SQL Toolkit - where in list formator](https://ask2rg.github.io/Experiment-with-JS/Tools/SQL%20Toolkit/sql-where-in-list-formator.html) - (Simple SQL tool for format copied list of items from Excel so can use in sql where in clause like
 
-
-
-Tools/
+[Type Practice - English](https://ask2rg.github.io/Experiment-with-JS/Tools/type-practice/type.html) 
+[Type Practice - Hindi](https://ask2rg.github.io/Experiment-with-JS/Tools/type-practice/typeHindi.html) 
 
