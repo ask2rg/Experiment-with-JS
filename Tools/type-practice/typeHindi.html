@@ -31,7 +31,8 @@
         }
 
         #type,
-        #input {
+        #input,
+        .type-area {
             width: 100%;
             max-width: 800px;
             margin: auto;
@@ -42,7 +43,8 @@
             letter-spacing: 2.2rem;
         }
 
-        #type {
+        #type,
+        .type-area {
             padding: 17px;
             border: 1px solid rgb(209, 205, 205);
             width: 822px;
@@ -84,8 +86,10 @@
     <div class="container">
         <h1 class="title">Hindi Typing Practice (Krutidev Devlys 010)</h1>
         <div style="width: 822px; margin: auto; display: flex; justify-content: flex-end; margin-top: -1rem;">
-            <span style="font-size: 15px; padding: 7px 22px; background: #d3dae2; font-family: sans-serif;">Hint : <span id="hinhint"></span></span>
-            <select name="level" id="levelDif"  onchange="difLev(this)" style=" padding: 4px 8px; border: 1px solid rgb(209, 205, 205); font-size: 16px;">
+            <span style="font-size: 15px; padding: 7px 22px; background: #d3dae2; font-family: sans-serif;">Hint : <span
+                    id="hinhint"></span></span>
+            <select name="level" id="levelDif" onchange="difLev(this)"
+                style=" padding: 4px 8px; border: 1px solid rgb(209, 205, 205); font-size: 16px;">
                 <option value="l1">Level 1</option>
                 <option value="l2" selected="">Level 2</option>
                 <option value="l3">Level 3</option>
@@ -93,9 +97,10 @@
                 <option value="l5">Level 5</option>
                 <option value="l6">Level 6</option>
                 <option value="l7">Level 7</option>
+                <option value="freetype">Free Typing</option>
             </select>
         </div>
-        <div style="display: flex; flex-direction: column;">
+        <div id="typepractice" style="display: flex; flex-direction: column;">
             <div id="input"></div>
             <textarea id="type" onkeyup="keyType()"></textarea>
             <div style="width: 822px; margin: 20px auto; display: flex;">
@@ -122,6 +127,12 @@
                 </div>
                 <div id="gptPrompt"></div>
             </div>
+
+        </div>
+
+        <div id="freetype" style="display: none; flex-direction: column;">
+            <textarea class="type-area"
+                style="margin: 26px auto; height: 500px; max-height: calc(100vh - 312px);"></textarea>
         </div>
 
 
@@ -154,6 +165,19 @@
         let chars = `asdfghjkl;'ASDFGHJKL:"`;
 
         function difLev(lev) {
+            let typePractice = document.getElementById('typepractice')
+            let typeFree = document.getElementById('freetype')
+            let hintText = document.getElementById('hinhint')
+            if (lev.value == 'freetype') {
+                typeFree.style.display = 'flex'
+                typePractice.style.display = 'none'
+                hintText.style.visibility = 'hidden'
+            } else {
+                typeFree.style.display = 'none'
+                typePractice.style.display = 'flex'
+                hintText.style.visibility = 'visible'
+            }
+
             if (lev.value == 'l1') {
                 chars = `asdfghjkl;'`;
             }
@@ -350,7 +374,7 @@
                 document.getElementById('speed').innerText = Math.round((totalChar / wordLen) / (totalTime / 60000) * 10) / 10
                 lastIncorrectCount = 0
                 lastTime = Date.now()
-                document.getElementById('hinhint').innerHTML =  input.innerText[type.value.length];
+                document.getElementById('hinhint').innerHTML = input.innerText[type.value.length];
             } else {
 
                 let correctStr = ''
