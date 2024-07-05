@@ -97,6 +97,10 @@
                 <option value="l5">Level 5</option>
                 <option value="l6">Level 6</option>
                 <option value="l7">Level 7</option>
+                <option value="l4">Level 8</option>
+                <option value="l5">Level 9</option>
+                <option value="l6">Level 10</option>
+                <!-- <option value="l7">Level 11</option> -->
                 <option value="freetype">Free Typing</option>
             </select>
         </div>
@@ -105,14 +109,19 @@
             <textarea id="type" onkeyup="keyType()"></textarea>
             <div style="width: 822px; margin: 20px auto; display: flex;">
                 <div
-                    style="font-size: 22px; font-family: sans-serif; padding: 12px 22px; background: #fcecbf; margin-right: auto;">
+                    style="font-size: 18px; font-family: sans-serif; padding: 12px 22px; background: #fcecbf; margin-right: auto;">
                     <span>Backspace</span><span id="bskCount"
                         style="display: inline-block; width: 92px; text-align: center; color: #e90808;">0</span>
                 </div>
                 <div
-                    style="font-size: 22px; font-family: sans-serif; padding: 12px 22px; background: #fcecbf; margin-right: auto;">
+                    style="font-size: 18px; font-family: sans-serif; padding: 12px 22px; background: #fcecbf; margin-right: auto;">
                     <span>Speed (wpm)</span><span id="speed"
                         style="display: inline-block; width: 92px; text-align: center;">0</span>
+                </div>
+                <div
+                    style="font-size: 18px; font-family: sans-serif; padding: 12px 22px; background: #fcecbf; margin-right: auto;">
+                    <span>Time : </span><span id="typeTime"
+                        style="display: inline-block; text-align: center;">0</span>
                 </div>
             </div>
             <div style="width: 822px; margin: 20px auto;">
@@ -185,18 +194,27 @@
                 chars = `asdfghjkl;'ASDFGHJKL:"`;
             }
             else if (lev.value == 'l3') {
-                chars = `asdfghjkl;'ASDFGHJKL:"qwertyuiop[]`;
+                chars = `qwertyuiop[]`;
             }
             else if (lev.value == 'l4') {
-                chars = `asdfghjkl;'ASDFGHJKL:"qwertyuiop[]QWERTYUIOP{}`;
+                chars = `qwertyuiop[]QWERTYUIOP{}`;
             }
             else if (lev.value == 'l5') {
-                chars = `asdfghjkl;'ASDFGHJKL:"qwertyuiop[]QWERTYUIOP{}zxcvbnm,./`;
+                chars = `asdfghjkl;'ASDFGHJKL:"qwertyuiop[]QWERTYUIOP{}`;
             }
             else if (lev.value == 'l6') {
-                chars = `asdfghjkl;'ASDFGHJKL:"qwertyuiop[]QWERTYUIOP{}zxcvbnm,./ZXCVBNM<>?`;
+                chars = `zxcvbnm,./`;
             }
             else if (lev.value == 'l7') {
+                chars = `zxcvbnm,./ZXCVBNM<>?`;
+            }
+            else if (lev.value == 'l8') {
+                chars = `asdfghjkl;'ASDFGHJKL:"qwertyuiop[]QWERTYUIOP{}zxcvbnm,./ZXCVBNM<>?`;
+            }
+            else if (lev.value == 'l9') {
+                chars = `#)+_|`;
+            }
+            else if (lev.value == 'l10') {
                 chars = `asdfghjkl;'ASDFGHJKL:"qwertyuiop[]QWERTYUIOP{}zxcvbnm,./ZXCVBNM<>?#)+_|`;
             } else {
                 chars = `asdfghjkl;'ASDFGHJKL:"`;
@@ -206,13 +224,13 @@
 
 
 
-        window.addEventListener('keyup', (event) => {
+        document.getElementById('type').addEventListener('keyup', (event) => {
             if (event.key === 'Backspace') {
                 bsKeyCount++
             } else {
                 keyCount++;
             }
-            document.getElementById('bskCount').innerText = bsKeyCount
+            document.getElementById('bskCount').innerText = `${bsKeyCount} (${Math.floor((bsKeyCount*100)/(totalChar+bsKeyCount))}%)`
         });
 
         function generateShuffledString() {
@@ -350,7 +368,39 @@
             });
         }
 
+        let intervelTypingTimer
+        let timeoutTypingTimer
+        let timevalue = 0
+
+        function timerHandelerStop() {
+            if(intervelTypingTimer){
+                clearInterval(intervelTypingTimer)
+            }
+            if(timeoutTypingTimer){
+                clearTimeout(timeoutTypingTimer)
+            }
+        }
+
+        function timerHandeler(type=''){
+            if(!intervelTypingTimer){
+                intervelTypingTimer = setInterval(timerHandeler, 1000)
+            }
+            timevalue++
+            let tt = timevalue
+            let sec = (tt % 60)
+            let min = (tt - sec)/60
+            document.getElementById('typeTime').innerHTML = `${min} min ${sec} sec`
+            if(type=='keypress'){
+                if(timeoutTypingTimer){
+                    clearTimeout(timeoutTypingTimer)
+                }
+                timeoutTypingTimer = setTimeout(timerHandelerStop, 4000)
+            }
+        }
+
+
         function keyType() {
+            timerHandeler('keypress');
             document.getElementById('gptPrompt').innerText = ''
             let input = document.getElementById('input')
             let type = document.getElementById('type')
@@ -370,6 +420,12 @@
                     "wait_time": waittime,
                     "incorrect_attempt": lastIncorrectCount
                 })
+                try{
+                    typeHist = typeHist.slice(20)
+                    localStorage.setItem("typeHist", JSON.stringify(typeHist))
+                }catch(er){
+
+                }
                 localStorage.setItem("typeHist", JSON.stringify(typeHist))
                 document.getElementById('speed').innerText = Math.round((totalChar / wordLen) / (totalTime / 60000) * 10) / 10
                 lastIncorrectCount = 0
