@@ -41,6 +41,7 @@
             color: #19191d;
             margin-top: 32px;
             letter-spacing: 2.2rem;
+            overflow-wrap: anywhere;
         }
 
         #type,
@@ -97,10 +98,10 @@
                 <option value="l5">Level 5</option>
                 <option value="l6">Level 6</option>
                 <option value="l7">Level 7</option>
-                <option value="l4">Level 8</option>
-                <option value="l5">Level 9</option>
-                <option value="l6">Level 10</option>
-                <!-- <option value="l7">Level 11</option> -->
+                <option value="l8">Level 8</option>
+                <option value="l9">Level 9</option>
+                <option value="l10">Level 10</option>
+                <!-- <option value="l11">Level 11</option> -->
                 <option value="freetype">Free Typing</option>
             </select>
         </div>
@@ -375,10 +376,14 @@
         function timerHandelerStop() {
             if(intervelTypingTimer){
                 clearInterval(intervelTypingTimer)
+                intervelTypingTimer = 0
             }
             if(timeoutTypingTimer){
                 clearTimeout(timeoutTypingTimer)
+                timeoutTypingTimer = 0
             }
+            
+
         }
 
         function timerHandeler(type=''){
