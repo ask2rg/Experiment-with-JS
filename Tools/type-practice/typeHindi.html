@@ -426,10 +426,10 @@
                     "incorrect_attempt": lastIncorrectCount
                 })
                 try{
-                    typeHist = typeHist.slice(20)
                     localStorage.setItem("typeHist", JSON.stringify(typeHist))
                 }catch(er){
-
+                    typeHist = typeHist.slice(20)
+                    localStorage.setItem("typeHist", JSON.stringify(typeHist))
                 }
                 localStorage.setItem("typeHist", JSON.stringify(typeHist))
                 document.getElementById('speed').innerText = Math.round((totalChar / wordLen) / (totalTime / 60000) * 10) / 10
