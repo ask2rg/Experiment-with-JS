@@ -241,7 +241,7 @@
 
 
 
-            let allChars = (chars + spaceArray.join('')).split('');
+            let allChars = (charSet + spaceArray.join('')).split('');
 
             for (let i = allChars.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -249,7 +249,7 @@
             }
 
             document.getElementById('type').value = ''
-            document.getElementById('input').innerHTML = allChars.join('');
+            document.getElementById('input').innerHTML = htmlEncode(allChars.join(''));
             document.getElementById('gptPrompt').innerText = ''
             startTime = 0
             lastTime = 0
@@ -457,6 +457,19 @@
             }
 
 
+        }
+
+
+        function htmlEncode(str) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&apos;'
+            };
+
+            return str.replace(/[&<>"']/g, function(m) { return map[m]; });
         }
 
     </script>
