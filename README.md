@@ -12,5 +12,5 @@
 
 
 
-[Typer](https://ask2rg.github.io/Experiment-with-JS/Tools/type-practice/typeHindi.html)  - Practice or learn typing  - supports > Hindi - Krutidev/ Devlys 010 and English. Try older version ([Typer - English](https://ask2rg.github.io/Experiment-with-JS/Tools/type-practice/type.html) )
+[Typer](https://ask2rg.github.io/Experiment-with-JS/Tools/type-practice/typer.html)  - Practice or learn typing  - supports > Hindi - Krutidev/ Devlys 010 and English. Try older version ([Typer - English](https://ask2rg.github.io/Experiment-with-JS/Tools/type-practice/type.html) )
 
