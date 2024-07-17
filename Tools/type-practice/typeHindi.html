@@ -532,14 +532,19 @@
                 lastIncorrectCount += 1
             }
 
-            let distanceFromTop = target.getBoundingClientRect().top - input.getBoundingClientRect().top;
-            // console.log(`${distanceFromTop} - ${input.scrollTop} = ${distanceFromTop-input.scrollTop}`)
-            if (distanceFromTop > 65) {
-                input.scrollTop += distanceFromTop // - input.scrollTop;
+            let nextkeys = document.querySelectorAll('#input .key:not(.typed)')
+            if(nextkeys.length){
+                let distanceFromTop = nextkeys[0].getBoundingClientRect().top - input.getBoundingClientRect().top;
+                // console.log(`${distanceFromTop} - ${input.scrollTop} = ${distanceFromTop-input.scrollTop}`)
+                if (distanceFromTop > 65) {
+                    input.scrollTop += distanceFromTop // - input.scrollTop;
+                }
             }
+           
             if (!document.querySelectorAll('#input .key:not(.typed)').length) {
                 ShowAnalysis()
                 generateShuffledString()
+                input.scrollTop = 0
             }
             
             document.getElementById('hinhint').innerHTML = document.querySelector('#input .key:not(.typed)').innerText;
