@@ -23,14 +23,14 @@
 
         .title {
             text-align: center;
-            font-family: sans-serif;
-            color: #1b1b20;
+            font-family: cursive;
+            color: #494338;
             font-size: 36px;
             margin-top: 58px;
             margin-bottom: 62px;
         }
 
-        #type,
+        /* #type, */
         #input,
         .type-area {
             width: 100%;
@@ -40,11 +40,32 @@
             font-family: 'devlys', serif;
             color: #19191d;
             margin-top: 32px;
-            letter-spacing: 2.2rem;
+            /* letter-spacing: 2.2rem; */
             overflow-wrap: anywhere;
         }
 
-        #type,
+        #input{
+            max-height: calc(100vh - 384px);
+            overflow-y: auto;
+            margin-bottom: 18px;
+        }
+
+
+        #input .key {
+            border: 1px solid #d1cdcd;
+            display: inline-block;
+            text-align: center;
+            padding: 0.6rem 1.8rem;
+            border-radius: 8px;
+            margin: 4px;
+        }
+
+        #input .key.typed{
+            color: #9ea7ab;
+            border-color: #e1dede;
+        }
+
+        /* #type, */
         .type-area {
             padding: 17px;
             border: 1px solid rgb(209, 205, 205);
@@ -107,7 +128,7 @@
         </div>
         <div id="typepractice" style="display: flex; flex-direction: column;">
             <div id="input"></div>
-            <textarea id="type" onkeyup="keyType()"></textarea>
+            <!-- <textarea id="type" onkeyup="keyType()"></textarea> -->
             <div style="width: 822px; margin: 20px auto; display: flex;">
                 <div
                     style="font-size: 18px; font-family: sans-serif; padding: 12px 22px; background: #fcecbf; margin-right: auto;">
@@ -159,7 +180,7 @@
         let bsKeyCount = 0;
         let wordLen = 7
         let keyScore = {}
-        let praticeCharLen = 120
+        let praticeCharLen = 40
         let praticeCharStr = ''
 
         // load hist
@@ -172,9 +193,11 @@
             }
         }
 
+        
         let chars = `asdfghjkl;'ASDFGHJKL:"`;
 
         function difLev(lev) {
+            document.getElementById('levelDif').blur()
             let typePractice = document.getElementById('typepractice')
             let typeFree = document.getElementById('freetype')
             let hintText = document.getElementById('hinhint')
@@ -213,10 +236,10 @@
                 chars = `asdfghjkl;'ASDFGHJKL:"qwertyuiop[]QWERTYUIOP{}zxcvbnm,./ZXCVBNM<>?`;
             }
             else if (lev.value == 'l9') {
-                chars = `#)+_|`;
+                chars = '`@#$^&*(-=\\#)+_|';
             }
             else if (lev.value == 'l10') {
-                chars = `asdfghjkl;'ASDFGHJKL:"qwertyuiop[]QWERTYUIOP{}zxcvbnm,./ZXCVBNM<>?#)+_|`;
+                chars = `asdfghjkl;'ASDFGHJKL:"qwertyuiop[]QWERTYUIOP{}zxcvbnm,./ZXCVBNM<>?`+'`@#$^&*(-=\\#)+_|';
             } else {
                 chars = `asdfghjkl;'ASDFGHJKL:"`;
             }
@@ -224,8 +247,62 @@
         }
 
 
+        function convertTextToBlocks(charList){
+            let htmlBlock = ''
+            charList.forEach((char)=>{
+                htmlBlock += `<span class='key'>${char}</span>`
+            })
+            document.getElementById('input').innerHTML = htmlBlock;
+        }
 
-        document.getElementById('type').addEventListener('keyup', (event) => {
+
+
+        
+
+        function parseKey(key) {
+            const specialKeys = [
+                'Escape', 'Tab', 'Enter', 'Shift', 'Control', 'Alt', 'CapsLock',
+                'Space', 'PageUp', 'PageDown', 'End', 'Home', 'ArrowLeft', 'ArrowUp',
+                'ArrowRight', 'ArrowDown', 'Insert', 'Delete', 'F1', 'F2', 'F3', 'F4',
+                'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'
+            ];
+            const shiftSpecialChars = {
+                    '1': '!',
+                    '2': '@',
+                    '3': '#',
+                    '4': '$',
+                    '5': '%',
+                    '6': '^',
+                    '7': '&',
+                    '8': '*',
+                    '9': '(',
+                    '0': ')',
+                    '`': '~',
+                    '-': '_',
+                    '=': '+',
+                    '[': '{',
+                    ']': '}',
+                    '\\': '|',
+                    ';': ':',
+                    "'": '"',
+                    ',': '<',
+                    '.': '>',
+                    '/': '?'
+                };
+
+            if (event.shiftKey && shiftSpecialChars.hasOwnProperty(key)) {
+                key = shiftSpecialChars[key];
+            }
+
+            return (!specialKeys.includes(key)) ? key : ''
+        }
+
+
+        document.addEventListener('keydown', (event) => {
+            let typeChar = parseKey(event.key)
+            if(typeChar){
+                keyType(typeChar)
+            }
             if (event.key === 'Backspace') {
                 bsKeyCount++
             } else {
@@ -237,7 +314,7 @@
         function generateShuffledString() {
             let charSet = chars + praticeCharStr
             let spaceCount = Math.floor(Math.random() * ((charSet.length / 7) - 4)) + 4; // Random number of spaces between 4 and N
-            let spaceArray = Array(spaceCount).fill(' '); // Array with the required number of spaces
+            let spaceArray = Array(spaceCount).fill(''); // Array with the required number of spaces
 
 
 
@@ -248,8 +325,9 @@
                 [allChars[i], allChars[j]] = [allChars[j], allChars[i]];
             }
 
-            document.getElementById('type').value = ''
-            document.getElementById('input').innerHTML = htmlEncode(allChars.join(''));
+            // document.getElementById('type').value = ''
+            // document.getElementById('input').innerHTML = htmlEncode(allChars.join(''));
+            convertTextToBlocks(allChars)
             document.getElementById('gptPrompt').innerText = ''
             startTime = 0
             lastTime = 0
@@ -361,13 +439,13 @@
         //     copyToClipboard(prompt)
         // }
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Prompt copied to clipboard');
-            }).catch(err => {
-                console.error('Could not copy text: ', err);
-            });
-        }
+        // function copyToClipboard(text) {
+        //     navigator.clipboard.writeText(text).then(() => {
+        //         alert('Prompt copied to clipboard');
+        //     }).catch(err => {
+        //         console.error('Could not copy text: ', err);
+        //     });
+        // }
 
         let intervelTypingTimer
         let timeoutTypingTimer
@@ -404,24 +482,28 @@
         }
 
 
-        function keyType() {
+        function keyType(typedKey) {
+            // console.log(typedKey)
             timerHandeler('keypress');
             document.getElementById('gptPrompt').innerText = ''
+            // let type = document.getElementById('type')
             let input = document.getElementById('input')
-            let type = document.getElementById('type')
+            let target = document.querySelector('#input .key:not(.typed)')
+            let targetKey = target.innerText
             if (startTime == 0) {
                 startTime = Date.now()
                 lastTime = startTime
             }
 
             let waittime = Date.now() - lastTime
-            let str1 = input.innerText.substr(0, (type.value.length));
-            let str2 = type.value;
-            if (str1 == str2 && str1 != '') {
+            // let str1 = input.innerText.substr(0, (type.value.length));
+            // let str2 = type.value;
+            if (targetKey == typedKey && targetKey != '') {
                 totalChar++
                 totalTime += waittime
+                target.classList.add('typed')
                 typeHist.push({
-                    "key": str2[str2.length - 1],
+                    "key": typedKey,
                     "wait_time": waittime,
                     "incorrect_attempt": lastIncorrectCount
                 })
@@ -435,26 +517,32 @@
                 document.getElementById('speed').innerText = Math.round((totalChar / wordLen) / (totalTime / 60000) * 10) / 10
                 lastIncorrectCount = 0
                 lastTime = Date.now()
-                document.getElementById('hinhint').innerHTML = input.innerText[type.value.length];
             } else {
 
-                let correctStr = ''
-                for (let i = 0; i < str2.length; i++) {
-                    if (str2[i] != str1[i]) {
-                        break
-                    }
-                    correctStr += str2[i]
-                }
-                type.value = correctStr
-                wc = (str2.length - correctStr.length) || 1
-                bsKeyCount += wc
-                lastIncorrectCount += wc
+                // let correctStr = ''
+                // for (let i = 0; i < str2.length; i++) {
+                //     if (str2[i] != str1[i]) {
+                //         break
+                //     }
+                //     correctStr += str2[i]
+                // }
+                // type.value = correctStr
+                // wc = (str2.length - correctStr.length) || 1
+                bsKeyCount += 1
+                lastIncorrectCount += 1
             }
 
-            if (input.innerText == str2) {
+            let distanceFromTop = target.getBoundingClientRect().top - input.getBoundingClientRect().top;
+            // console.log(`${distanceFromTop} - ${input.scrollTop} = ${distanceFromTop-input.scrollTop}`)
+            if (distanceFromTop > 65) {
+                input.scrollTop += distanceFromTop // - input.scrollTop;
+            }
+            if (!document.querySelectorAll('#input .key:not(.typed)').length) {
                 ShowAnalysis()
                 generateShuffledString()
             }
+            
+            document.getElementById('hinhint').innerHTML = document.querySelector('#input .key:not(.typed)').innerText;
 
 
         }
