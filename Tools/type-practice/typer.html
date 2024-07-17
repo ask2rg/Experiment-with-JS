@@ -34,7 +34,7 @@
         #input,
         .type-area {
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             margin: auto;
             font-size: 38px;
             font-family: 'devlys', serif;
@@ -44,11 +44,24 @@
             overflow-wrap: anywhere;
         }
 
+        #app.hi-dv #input,
+        #app.hi-dv .type-area{
+            font-family: 'devlys', serif;
+        }
+
+        #app.en #input,
+        #app.en .type-area{
+            font-family: sans-serif;
+        }
+
+        
+
         #input{
             max-height: calc(100vh - 384px);
             overflow-y: auto;
             margin-bottom: 18px;
         }
+
 
 
         #input .key {
@@ -58,18 +71,28 @@
             padding: 0.6rem 1.8rem;
             border-radius: 8px;
             margin: 4px;
+            background: #eeeeeec4;
         }
 
+        #app.en #input .key {
+            font-size: 28px;
+            padding: 8px 22px;
+            min-width: 22px;
+            background: #eeeeeec4;
+            color: #373a3b;
+        }   
+
         #input .key.typed{
-            color: #9ea7ab;
-            border-color: #e1dede;
+            color: #9ea7ab !important;
+            border-color: #e1dede !important;
+            background: #eeeeee26 !important;
         }
 
         /* #type, */
         .type-area {
             padding: 17px;
             border: 1px solid rgb(209, 205, 205);
-            width: 822px;
+            width: 900px;
             font-family: 'devlys', serif;
             height: 159px;
             outline: none;
@@ -101,17 +124,22 @@
             font-family: 'devlys', serif;
             font-size: 26px;
         }
+
+        #app.en table.analysis-key tr td:nth-child(1){
+            font-family: sans-serif;
+            font-size: 20px;
+        }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1 class="title">Hindi Typing Practice (Krutidev Devlys 010)</h1>
-        <div style="width: 822px; margin: auto; display: flex; justify-content: flex-end; margin-top: -1rem;">
+    <div id='app' class="container hi-dv">
+        <h1 class="title">Typing Practice ( Hindi - Krutidev Devlys 010 )</h1>
+        <div style="width: 900px; margin: auto; display: flex; justify-content: flex-end; margin-top: -1rem;">
             <span style="font-size: 15px; padding: 7px 22px; background: #d3dae2; font-family: sans-serif;">Hint : <span
                     id="hinhint"></span></span>
             <select name="level" id="levelDif" onchange="difLev(this)"
-                style=" padding: 4px 8px; border: 1px solid rgb(209, 205, 205); font-size: 16px;">
+                style=" padding: 4px 8px; border: 1px solid rgb(209, 205, 205); font-size: 16px; margin-left: 10px;">
                 <option value="l1">Level 1</option>
                 <option value="l2" selected="">Level 2</option>
                 <option value="l3">Level 3</option>
@@ -125,11 +153,17 @@
                 <!-- <option value="l11">Level 11</option> -->
                 <option value="freetype">Free Typing</option>
             </select>
+
+            <select name="lang-type" id="langType" onchange="changeTypingLang(this)"
+                style=" padding: 4px 8px; border: 1px solid rgb(209, 205, 205); font-size: 16px; margin-left: 10px;">
+                <option value="en">English</option>
+                <option value="hi-dv" selected="">Hindi - Devlys/ Krutidev</option>
+            </select>
         </div>
         <div id="typepractice" style="display: flex; flex-direction: column;">
             <div id="input"></div>
             <!-- <textarea id="type" onkeyup="keyType()"></textarea> -->
-            <div style="width: 822px; margin: 20px auto; display: flex;">
+            <div style="width: 900px; margin: 20px auto; display: flex;">
                 <div
                     style="font-size: 18px; font-family: sans-serif; padding: 12px 22px; background: #fcecbf; margin-right: auto;">
                     <span>Backspace</span><span id="bskCount"
@@ -146,7 +180,7 @@
                         style="display: inline-block; text-align: center;">0</span>
                 </div>
             </div>
-            <div style="width: 822px; margin: 20px auto;">
+            <div style="width: 900px; margin: 20px auto;">
                 <!-- <button onclick="ShowGptPrompt()" style="padding: 8px 12px; font-size: 14px; font-family: sans-serif; font-weight: 500; background: #1b1c1c; color: #fff; letter-spacing: 0.05rem; border: navajowhite; border-radius: 4px; cursor: pointer;">Show GPT Prompt for Analysis</button> -->
                 <div style="display: flex; justify-content: space-between;">
                     <button onclick="ShowAnalysis(true)"
@@ -191,6 +225,24 @@
             } catch (err) {
                 typeHist = []
             }
+        }
+
+
+        function changeTypingLang(lang){
+            document.getElementById('langType').blur()
+            localStorage.setItem('typeHist', '[]'); if(typeHist){typeHist = [];}
+            appTitle =  document.querySelector('body h1.title')
+            app = document.getElementById('app')
+            if(lang.value == 'en'){
+                appTitle.innerText = `Typing Practice ( English )`
+                app.className = 'container en'
+            }
+
+            if(lang.value == 'hi-dv'){
+                appTitle.innerText = `Typing Practice ( Hindi - Krutidev Devlys 010 )`
+                app.className = 'container hi-dv'
+            }
+            
         }
 
         
