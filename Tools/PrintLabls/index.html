@@ -906,7 +906,7 @@
         function loadFromLocalStorage() {
             const special = ['set-halign', 'set-valign', 'showlableborder', 'lablelayout']
             const data = JSON.parse(localStorage.getItem('inputDataLableP'));
-
+            if(!data) return
             document.getElementById('pageLayout').value =  data['pageLayout'];
             document.getElementById('pageLayoutW').value =  data['pageLayoutW'];
             document.getElementById('pageLayoutH').value = data['pageLayoutH'];
