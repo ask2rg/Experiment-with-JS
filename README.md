@@ -14,3 +14,9 @@
 
 [Typer](https://ask2rg.github.io/Experiment-with-JS/Tools/type-practice/typer.html)  - Practice or learn typing  - supports > Hindi - Krutidev/ Devlys 010 and English. Try older version ([Typer - English](https://ask2rg.github.io/Experiment-with-JS/Tools/type-practice/type.html) )
 
+
+
+[PrintLables](https://ask2rg.github.io/Experiment-with-JS/Tools/PrintLabls/index.html) - This tool provides a simple way to print labels directly from your Excel data without getting into the complexity of Word and Excel. To print self adhesive labels easily, you can set a format and adjust the layout with a user-friendly interface.
+
+
+
