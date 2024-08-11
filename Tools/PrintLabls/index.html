@@ -660,7 +660,6 @@
                 if(filetype == 'csv'){
                     jsonData = csvdata
                 } else{
-                    sheetdata = exceldata.Sheets[sheetname]
                     jsonData = XLSX.utils.sheet_to_json(sheetdata, { header: 1 });
 
                 }
