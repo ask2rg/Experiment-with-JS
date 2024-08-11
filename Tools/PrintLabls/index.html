@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Label Printer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Lato:wght@400;700&family=Montserrat:wght@400;700&family=Oswald:wght@400;700&family=Source+Sans+Pro:wght@400;700&family=Nunito:wght@400;700&family=Raleway:wght@400;700&family=Poppins:wght@400;700&family=Roboto+Slab:wght@400;700&family=Playfair+Display:wght@400;700&family=PT+Sans:wght@400;700&family=Arimo:wght@400;700&family=Quicksand:wght@400;700&family=Fira+Sans:wght@400;700&family=Work+Sans:wght@400;700&family=Josefin+Sans:wght@400;700&family=Varela+Round:wght@400;700&family=Baloo+2:wght@400;700&family=Oxygen:wght@400;700&family=Cabin:wght@400;700&family=Inconsolata:wght@400;700&family=Overpass:wght@400;700&family=Karla:wght@400;700&family=Titillium+Web:wght@400;700&family=Zilla+Slab:wght@400;700&family=Be+Vietnam:wght@400;700&family=DM+Sans:wght@400;700&family=Hind:wght@400;700&family=Rubik:wght@400;700&family=Assistant:wght@400;700&family=Lexend:wght@400;700&family=Merriweather:wght@400;700&family=PT+Serif:wght@400;700&family=Noto+Sans:wght@400;700&family=Ubuntu:wght@400;700&family=Signika:wght@400;700&family=Raleway+Dots:wght@400;700&family=Julius+Sans+One:wght@400;700&family=Gloock:wght@400;700&family=DM+Serif+Display:wght@400;700&family=Alumni+Sans:wght@400;700&family=Barlow:wght@400;700&family=Bitter:wght@400;700&family=Cabinet+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        @page {
+            margin: 0;
+        }
+        
+        body {
+            font-family: lato, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2 {
+            color: #ff8466;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 4px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="file"],
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #ff8466;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            letter-spacing: 0.04rem;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin: auto 4px;
+            cursor: pointer !important;
+        }
+
+        button:hover {
+            background-color: #ff6b4a;
+        }
+
+        #previewContainer {
+            margin-top: 30px;
+            border: 1px dashed #ff8466;
+            padding: 20px;
+            min-height: 200px;
+        }
+
+        input:disabled {
+            background: #dfdfdf99;
+        }
+
+        .page-margin .input-group label {
+            font-weight: 500;
+            margin-bottom: 0;
+            font-size: 0.94rem;
+        }
+
+        .page-margin .input-group {
+            display: flex;
+            align-items: center;
+            column-gap: 10px;
+        }
+
+        .row {
+            display: flex;
+            column-gap: 28px;
+            row-gap: 22px;
+        }
+
+        .align-btn,
+        .align-btn-fill {
+            width: 36px;
+            padding: 4px;
+            border: solid 1px #e0e0e0;
+            margin: 2px;
+            border-radius: 4px;
+            stroke: #4f5560;
+            cursor: pointer;
+        }
+
+        .align-btn-fill g {
+            stroke: #4f5560;
+        }
+
+        .align-btn-fill {
+            fill: #4f5560;
+        }
+
+        .align-btn:hover,
+        .align-btn-fill:hover g {
+            border: solid 1px #b6b6b6;
+            stroke: #191c20;
+        }
+
+        .align-btn-fill:hover {
+            fill: #191c20;
+        }
+
+        .align-btn.active,
+        .align-btn-fill.active g {
+            stroke: #e86444;
+        }
+
+        .align-btn-fill.active {
+            fill: #e86444;
+        }
+
+        .lablecard {
+            background: #fff;
+            border-radius: 4px;
+            padding: 0.2cm;
+            display: flex;
+            box-sizing: border-box;
+            overflow-wrap: anywhere;
+            overflow: auto;
+        }
+        .sheetname{
+            padding: 8px 14px;
+            border: solid 1px #dadbe1;
+            cursor: pointer;
+            margin: 4px 0;
+            box-sizing: border-box;
+            text-wrap: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sheetname:hover{
+            border: solid 1px #e86444;
+        }
+        .sheetlist{
+            max-height: 220px;
+            overflow: auto;
+        }
+        .col-header{
+            padding: 4px 12px;
+            border: #ffa266 2px solid;
+            border-radius: 6px;
+            margin: 4px;
+        }
+
+        .pageLable{
+            background: #eee;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            box-sizing: border-box;
+            border-bottom: 1px solid #d2d8df;
+        }
+
+        .sample-dwn{
+            background: #2a9b48;
+            color: #fff;
+            padding: 2px 12px;
+            border-radius: 4px;
+            margin: 0 4px;
+            font-family: Roboto, sans-serif;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        @media print {
+            .container.config-sec,  .section.action-btn {
+                display: none;
+            }
+            #previewContainer{
+                background: #fff !important;
+                height: auto !important;
+                padding: 0px !important;
+                border: none !important;
+                margin: 0 !important;
+                min-height: auto !important;
+                width: fit-content;
+                overflow: visible;
+            }
+            body, html{
+                margin: 0 !important;
+                background:none  !important;
+                padding: 0 !important
+            }
+            .pageLable{
+                background: none;
+                border-bottom: none;
+            }
+            
+        }
+        
+    </style>
+    <style id="pagePrintSize">
+
+    </style>
+</head>
+
+<body>
+    <div class="container config-sec">
+        <h1>Print Labels</h1>
+        <p>This tool provides a simple way to print labels directly from your Excel data without getting into the complexity of Word and Excel. To print labels easily, you can set a format and adjust the layout with a user-friendly interface.</p>
+        <div class="section">
+            <h2>1. Select File</h2>
+            <div class="input-group">
+                <label for="fileUpload">Upload File (xlsx, xls or csv):</label>
+                <input type="file" id="fileUpload" accept=".xlsx,.xls,.csv" onchange="handelFileUpload(this)" />
+            </div>
+            <div id="selsheet" style="display: none;">
+                <label for="fileUpload">Select Sheet:</label>
+                <div class="sheetlist">
+                </div>
+            </div>
+
+            <div id="lableconfig" style="display: none;">
+                
+            </div>
+            <div style=" text-align: right;">Download Sample File - <a href="./indian_addresses.xls" class="sample-dwn">XLS</a> <a href="./indian_addresses.xlsx" class="sample-dwn">XLSX</a> <a href="./indian_addresses.csv" class="sample-dwn">CSV</a> </div>
+           
+        </div>
+
+        <div class="section">
+            <h2>2. Page Layout</h2>
+            <div class="row">
+                <div class="input-group">
+                    <label for="pageLayout">Select Page Layout: </label>
+                    <select id="pageLayout" onchange="setPageLayout(this)">
+                        <option value="A0" data-widthcm="84.1" data-heightcm="118.9">A0</option>
+                        <option value="A1" data-widthcm="59.4" data-heightcm="84.1">A1</option>
+                        <option value="A2" data-widthcm="42" data-heightcm="59.4">A2</option>
+                        <option value="A3" data-widthcm="29.7" data-heightcm="42">A3</option>
+                        <option value="A4" data-widthcm="21" data-heightcm="29.7" selected>A4</option>
+                        <option value="A5" data-widthcm="14.8" data-heightcm="21">A5</option>
+                        <option value="Letter" data-widthcm="21.59" data-heightcm="27.94">Letter</option>
+                        <option value="Legal" data-widthcm="21.59" data-heightcm="35.56">Legal</option>
+                        <option value="Tabloid" data-widthcm="27.94" data-heightcm="43.18">Tabloid</option>
+                        <option value="custom" data-widthcm="21" data-heightcm="29.7">Custom</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="pageLayout">Page Width (cm): </label>
+                    <input type="number" id="pageLayoutW" min="0" value="21" disabled
+                        onchange="calulateLableSize(this)">
+                </div>
+                <div class="input-group">
+                    <label for="pageLayout">Page Height (cm): </label>
+                    <input type="number" id="pageLayoutH" min="0" value="29.7" disabled
+                        onchange="calulateLableSize(this)">
+                </div>
+            </div>
+
+            <div class="page-margin">
+                <label for="marginTop">Page Margin (cm):</label>
+                <div class="row">
+                    <div class="input-group">
+                        <label for="marginTop">Top</label>
+                        <input type="number" id="marginTop" min="0" step="0.1" value="1"
+                            onchange="calulateLableSize(this)">
+                    </div>
+                    <div class="input-group">
+                        <label for="marginBottom">Bottom</label>
+                        <input type="number" id="marginBottom" min="0" step="0.1" value="1"
+                            onchange="calulateLableSize(this)">
+                    </div>
+                    <div class="input-group">
+                        <label for="marginLeft">Left</label>
+                        <input type="number" id="marginLeft" min="0" step="0.1" value="1"
+                            onchange="calulateLableSize(this)">
+                    </div>
+                    <div class="input-group">
+                        <label for="marginRight">Right</label>
+                        <input type="number" id="marginRight" min="0" step="0.1" value="1"
+                            onchange="calulateLableSize(this)">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3. Label Size</h2>
+            <div class="row">
+                <div class="input-group">
+                    <label for="labelsPerRow">Number of Labels per Page:</label>
+                    <input type="number" id="labelsPerPg" min="1" value="12" onchange="calulateLableSize(this)">
+                </div>
+                <div class="input-group">
+                    <label for="labelsPerColumn">Number of Labels per Row:</label>
+                    <input type="number" id="labelsPerRow" min="1" value="2" onchange="calulateLableSize(this)">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="input-group">
+                    <label for="columnGap">Column Gap (cm):</label>
+                    <input type="number" id="columnGap" min="0" step="0.1" value="0.5"
+                        onchange="calulateLableSize(this)">
+                </div>
+                <div class="input-group">
+                    <label for="rowGap">Row Gap (cm):</label>
+                    <input type="number" id="rowGap" min="0" step="0.1" value="0.5" onchange="calulateLableSize(this)">
+                </div>
+            </div>
+
+            <div id="lableSize"></div>
+
+        </div>
+
+        <div class="section">
+            <h2>4. Font Styling</h2>
+            <div class="row">
+                <div class="input-group">
+                    <label for="fontSize">Font Size:</label>
+                    <input type="number"  onchange="previewLables()"  id="fontSize" min="6" max="72" value="12">
+                </div>
+                <div class="input-group">
+                    <label for="fontColor">Font Color:</label>
+                    <input type="color" onchange="previewLables()"  id="fontColor" value="#000000">
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-group">
+                    <label for="fontStyle">Font Family:</label>
+                    <select id="fontStyle" onchange="previewLables()" >
+                        <option value="Roboto">Roboto</option>
+                        <option value="Open Sans">Open Sans</option>
+                        <option value="Lato">Lato</option>
+                        <option value="Montserrat">Montserrat</option>
+                        <option value="Oswald">Oswald</option>
+                        <option value="Source Sans Pro">Source Sans Pro</option>
+                        <option value="Nunito">Nunito</option>
+                        <option value="Raleway">Raleway</option>
+                        <option value="Poppins">Poppins</option>
+                        <option value="Roboto Slab">Roboto Slab</option>
+                        <option value="Playfair Display">Playfair Display</option>
+                        <option value="PT Sans">PT Sans</option>
+                        <option value="Arimo">Arimo</option>
+                        <option value="Quicksand">Quicksand</option>
+                        <option value="Fira Sans">Fira Sans</option>
+                        <option value="Work Sans">Work Sans</option>
+                        <option value="Josefin Sans">Josefin Sans</option>
+                        <option value="Varela Round">Varela Round</option>
+                        <option value="Baloo 2">Baloo 2</option>
+                        <option value="Oxygen">Oxygen</option>
+                        <option value="Cabin">Cabin</option>
+                        <option value="Inconsolata">Inconsolata</option>
+                        <option value="Overpass">Overpass</option>
+                        <option value="Karla">Karla</option>
+                        <option value="Titillium Web">Titillium Web</option>
+                        <option value="Zilla Slab">Zilla Slab</option>
+                        <option value="Be Vietnam">Be Vietnam</option>
+                        <option value="DM Sans">DM Sans</option>
+                        <option value="Hind">Hind</option>
+                        <option value="Rubik">Rubik</option>
+                        <option value="Assistant">Assistant</option>
+                        <option value="Lexend">Lexend</option>
+                        <option value="Merriweather">Merriweather</option>
+                        <option value="PT Serif">PT Serif</option>
+                        <option value="Noto Sans">Noto Sans</option>
+                        <option value="Ubuntu">Ubuntu</option>
+                        <option value="Signika">Signika</option>
+                        <option value="Raleway Dots">Raleway Dots</option>
+                        <option value="Julius Sans One">Julius Sans One</option>
+                        <option value="Gloock">Gloock</option>
+                        <option value="DM Serif Display">DM Serif Display</option>
+                        <option value="Alumni Sans">Alumni Sans</option>
+                        <option value="Barlow">Barlow</option>
+                        <option value="Bitter">Bitter</option>
+                        <option value="Cabinet Grotesk">Cabinet Grotesk</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="lineHeight">Line Height:</label>
+                    <input type="number" onchange="previewLables()"  id="lineHeight" min="1" step="0.1" value="1.5">
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-group">
+                    <label for="fontStyle">Horizontal Alignment:</label>
+                    <div class="set-halign">
+                        <span>
+                            <svg onclick="alignactive('halign', this, 'left')" class="align-btn active left"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#333"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 9.5H3M21 4.5H3M21 14.5H3M17 19.5H3" />
+                            </svg>
+                        </span>
+                        <span>
+                            <svg onclick="alignactive('halign', this, 'center')" xmlns="http://www.w3.org/2000/svg"
+                                class="align-btn center" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 9.5H5M21 4.5H3M21 14.5H3M19 19.5H5" />
+                            </svg>
+                        </span>
+                        <span>
+                            <svg onclick="alignactive('halign', this, 'right')" xmlns="http://www.w3.org/2000/svg"
+                                class="align-btn right" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 9.5H7M21 4.5H3M21 14.5H3M21 19.5H7" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="lineHeight">Vertical Alignment:</label>
+                    <div class="set-valign">
+                        <span>
+                            <svg onclick="alignactive('valign', this, 'flex-start')" class="align-btn-fill active flex-start"
+                                viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                    <g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"
+                                        transform="translate(3 3)">
+                                        <path d="m3.5 7.5 4-4 4 4"></path>
+                                        <path d="m7.5 3.5v11"></path>
+                                        <path d="m.5.5h14"></path>
+                                    </g>
+                                </g>
+                            </svg>
+                        </span>
+                        <span>
+                            <svg onclick="alignactive('valign', this, 'center')" class="align-btn-fill center"
+                                viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                    <g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"
+                                        transform="translate(3 1)">
+                                        <path d="m4.5 4.5 3 3 3-3"></path>
+                                        <path d="m7.5.5v7"></path>
+                                        <path d="m4.5 14.5 3-3 3 3"></path>
+                                        <path d="m7.5 11.5v7"></path>
+                                        <path d="m.5 9.5h14"></path>
+                                    </g>
+                                </g>
+                            </svg>
+                        </span>
+                        <span>
+                            <svg class="align-btn-fill flex-end" onclick="alignactive('valign', this, 'flex-end')"
+                                viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                <g id="SVGRepo_iconCarrier">
+                                    <g fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round"
+                                        transform="translate(4 3)">
+                                        <path d="m2.5 7.5 4 4.232 4-4.191"></path>
+                                        <path d="m6.5.5v11"></path>
+                                        <path d="m.5 14.5h12"></path>
+                                    </g>
+                                </g>
+                            </svg>
+
+                        </span>
+
+                    </div>
+                </div>
+            </div>
+                        
+        </div>
+
+        <div class="row">
+            <div class="input-group" style="display: flex; column-gap: 6px; align-items: center;">
+                <input onchange="previewLables()" type="checkbox" name="" id="showlableborder"
+                    style="cursor: pointer; user-select: none;">
+                <label for="fontStyle"
+                    onclick="let a = document.getElementById('showlableborder'); a.checked = !a.checked; previewLables();"
+                    style="margin: 0;  cursor: pointer;">Show lable border for preview print.</label>
+            </div>
+        </div>
+        <div class="row" style="justify-content: flex-end; column-gap: 6px;">
+            <button id="printLabels" onclick="localStorage.removeItem('inputDataLableP'); location.reload()" style=" background-color: #6f7980; padding: 8px 18px;">Reset</button>
+            <button id="printLabels" 
+                onclick="saveToLocalStorage(); prompt('Copy and save below text.',localStorage.getItem('inputDataLableP'))" 
+                style=" background-color: #6f7980;padding: 8px 18px; ">Save Config</button>
+            <button id="printLabels" 
+            onclick="loadConfig() " 
+            style=" background-color: #6f7980;padding: 8px 18px; ">Load Config</button>
+        </div>
+    </div>
+
+    <div class="section action-btn" style="background: #ffebd4;">
+        <button id="previewButton" onclick="previewLables()">Preview Labels</button>
+        <button id="printLabels" onclick="printLables()">Print Labels</button>
+    </div>
+
+    <div id="previewContainer" style="background: #fff9f2;  height: calc(100vh - 200px); overflow: auto; padding: 6px;">
+        Label preview will appear here
+    </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
+    <script>
+
+        let valign = 'flex-start';
+        let halign = 'left';
+
+        function loadConfig(){
+            let data = prompt('Please paste the previously saved config text below.', '');
+            if (data) {
+                try{
+                    const dataJSON = JSON.parse(data);
+                    localStorage.setItem('inputDataLableP', JSON.stringify(dataJSON));
+                }catch(er){
+                    alert('Please enter valid config text.')
+                }
+                
+            }else{
+                alert('Please enter valid config text.')
+            }
+        }
+        function setPageLayout(pg) {
+            let pgw = document.getElementById('pageLayoutW')
+            let pgh = document.getElementById('pageLayoutH')
+            let selectedPg = pg.options[pg.selectedIndex];
+            if (pg.value != 'custom') {
+                pgw.value = selectedPg.getAttribute('data-widthcm');
+                pgh.value = selectedPg.getAttribute('data-heightcm');
+                pgw.disabled = true
+                pgh.disabled = true
+            } else {
+                pgw.disabled = false;
+                pgh.disabled = false;
+                pgw.value = 21;
+                pgh.value = 29.7;
+            }
+            calulateLableSize(pg)
+        }
+
+        function calulateLableSize(inputbox) {
+            let labelRow = document.querySelector('#labelsPerRow').value
+            let labelPg = document.querySelector('#labelsPerPg').value
+            if (labelPg % labelRow) {
+                event.preventDefault()
+                alert('Total labels per page must be a multiple of labels per row. Please check "Number of Labels per Page" and "Number of Labels per Row".')
+                return false
+            }
+
+            let labelCol = labelPg / labelRow
+            let pgw = document.querySelector('#pageLayoutW').value
+            let pgh = document.querySelector('#pageLayoutH').value
+            let pgMgT = document.querySelector('#marginTop').value
+            let pgMgB = document.querySelector('#marginBottom').value
+            let pgMgL = document.querySelector('#marginLeft').value
+            let pgMgR = document.querySelector('#marginRight').value
+            let rowgap = document.querySelector('#rowGap').value
+            let colgap = document.querySelector('#columnGap').value
+
+            let lableSizeW = pgw - pgMgL - pgMgR - ((labelRow - 1) * colgap)
+            let lableSizeH = pgh - pgMgT - pgMgB - ((labelCol - 1) * rowgap)
+
+            if (lableSizeW <= 0) {
+                alert('The page width is insufficient to fit the labels properly. Please check the following settings:\n- Page Width\n- Page Margins (right and left)\n- Number of Labels per Row\n- Row Gap ')
+                return false
+            }
+            if (lableSizeH <= 0) {
+                alert('The page height is insufficient to fit the labels properly. Please check the following settings:\n- Page Height\n- Page Margins (top and bottom)\n- Number of Labels per Page\n- Column Gap ')
+                return false
+            }
+            previewLables()
+        }
+
+        function alignactive(type, item, value) {
+            if (type == 'valign') {
+                let halignActive = document.querySelectorAll('.set-valign .align-btn-fill.active')[0]
+                if(halignActive){
+                    halignActive.classList.remove('active')
+                }
+                item.classList.add('active')
+                valign = value
+
+            } else if (type == 'halign') {
+
+                let valignActive = document.querySelectorAll('.set-halign .align-btn.active')[0]
+                if(valignActive){
+                    valignActive.classList.remove('active')
+                }
+                item.classList.add('active')
+                halign = value
+            }
+            previewLables()
+        }
+
+
+        function previewLables() {
+            saveToLocalStorage()
+            let labelRow = document.querySelector('#labelsPerRow').value
+            let labelPg = document.querySelector('#labelsPerPg').value
+            let labelCol = labelPg / labelRow
+            let pgw = document.querySelector('#pageLayoutW').value
+            let pgh = document.querySelector('#pageLayoutH').value
+            let pgMgT = document.querySelector('#marginTop').value
+            let pgMgB = document.querySelector('#marginBottom').value
+            let pgMgL = document.querySelector('#marginLeft').value
+            let pgMgR = document.querySelector('#marginRight').value
+            let rowgap = document.querySelector('#rowGap').value
+            let colgap = document.querySelector('#columnGap').value
+
+            let fontSize = document.querySelector('#fontSize').value
+            let fontColor = document.querySelector('#fontColor').value
+            let lineHeight = document.querySelector('#lineHeight').value
+            let fontStyle = document.querySelector('#fontStyle').value
+
+            let lableSizeW = (pgw - pgMgL - pgMgR - ((labelRow - 1) * colgap)) / labelRow
+            let lableSizeH = (pgh - pgMgT - pgMgB - ((labelCol - 1) * rowgap)) / labelCol
+            let lableborder = ''
+            if (document.getElementById('showlableborder').checked) {
+                lableborder = 'border: 1px solid #4a4e55';
+            }
+
+            let lableText = []
+            let layoutlable = ''
+            if(document.getElementById('lablelayout')){
+                layoutlable = document.getElementById('lablelayout').value;
+            }
+            if(sheetdata || csvdata){
+                let jsonData
+                if(filetype == 'csv'){
+                    jsonData = csvdata
+                } else{
+                    sheetdata = exceldata.Sheets[sheetname]
+                    jsonData = XLSX.utils.sheet_to_json(sheetdata, { header: 1 });
+
+                }
+                const headers = listToDict(jsonData[0]);
+                let pg = 0
+                lableText[pg] = ''
+                let lables = 0
+                for(let i=1; i < jsonData.length; i++){
+                    
+                    if(lables < labelPg){
+                        lables++
+                    } else {
+                        lables = 1
+                        pg++
+                        lableText[pg] = ''
+                    }
+                    let row = jsonData[i]
+                    if(!row.length){
+                        continue
+                    }
+                    
+                    let lableTemp = layoutlable.replace(/(\r\n|\n|\r)/g, '<br>');
+                    for(let r = 0; r < row.length; r++){
+                        let regex = new RegExp(`{{\\s*${Object.keys(headers)[r]}\\s*}}`, 'g');
+                        lableTemp = lableTemp.replace(regex, row[r]||'');
+                    }
+
+                    let jc = {
+                        'right':'flex-end',
+                        'center':'center',
+                        'left':'flex-start',
+                    }
+                    
+                    lableTemp = lableTemp.replace(/{{\s*.*?\s*}}/g, '');
+                    lableText[pg] += `
+                             <div class='lablecard' style='
+                                width:${lableSizeW}cm; 
+                                height:${lableSizeH}cm; 
+                                ${lableborder};
+                                font-size:${fontSize}px;
+                                color:${fontColor};
+                                line-height:${lineHeight};
+                                text-align:${halign};
+                                align-items:${valign};
+                                justify-content:${jc[halign]};
+                                font-family:"${fontStyle}";
+                                '><span>${lableTemp}</span></div>
+                        `
+                }
+                
+            }
+            
+
+
+            let pagediv = ''
+            lableText.forEach((item)=>{
+                pagediv += `
+                    <div class="pageLable" style='
+                        width:${pgw}cm; 
+                        height:${pgh}cm; 
+                        padding:${pgMgT}cm ${pgMgR}cm ${pgMgB}cm ${pgMgL}cm; 
+                        column-gap: ${rowgap}cm;
+                        row-gap:${colgap}cm;
+                        '>
+                        ${item}
+                    </div>
+                `
+            })
+            
+            document.querySelector("#previewContainer").innerHTML = pagediv
+           
+        }
+
+
+        function listToDict(arr) {
+            const result = {};
+            const counts = {};
+
+            arr.forEach((item, index) => {
+                if (counts[item] !== undefined) {
+                    counts[item]++;
+                    result[`${item}_${counts[item]}`] = index;
+                } else {
+                    counts[item] = 0;
+                    result[item] = index;
+                }
+            });
+
+            return result;
+        }
+
+        let exceldata, sheetdata, csvdata, filetype;
+        function handelFileUpload(input) {
+            const file = input.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                let workbook
+                if (file.name.toLowerCase().endsWith('.csv')) {
+                    filetype = 'csv'
+                    csvdata = e.target.result
+                    csvdata = csvdata.split('\n');
+                    csvdata = csvdata.map(row => row.split(','));
+                    workbook = ''
+                    sheetdata = ''
+                    porocessSheet('-', 'csv')
+                    return 
+                } 
+                filetype = 'xlsx'
+                workbook = XLSX.read(data, { type: 'array' });
+                exceldata = workbook
+                document.querySelector('#selsheet .sheetlist').innerHTML = ''
+                if(workbook.SheetNames.length > 1){
+                    workbook.SheetNames.forEach((sheetName) => {
+                        document.querySelector('#selsheet .sheetlist').innerHTML += `<div class="sheetname" onclick="porocessSheet('${sheetName}', 'xlsx')">${sheetName}</div>`;
+                    });
+                    document.getElementById('selsheet').style.display = 'block'
+                    // workbook.SheetNames.forEach((sheetName) => {
+                    //     const worksheet = workbook.Sheets[sheetName];
+                    //     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    //     console.log(`Data from ${sheetName}:`, jsonData);
+                    //     // You can process the jsonData as needed here
+                    // });
+                } else{
+                    porocessSheet(workbook.SheetNames[0], 'xlsx')
+                }
+
+               
+            };
+
+            if (file.name.endsWith('.csv')) {
+                reader.readAsText(file);
+            } else if (file.name.endsWith('.xls') || file.name.endsWith('.xlsx')) {
+                reader.readAsArrayBuffer(file);
+            } else {
+                alert('Invalid file format. Please upload a CSV, XLS, or XLSX file.');
+            }
+        }       
+
+        function porocessSheet(sheetname, type){
+            let jsonData
+            if(type == 'csv'){
+                jsonData = csvdata
+            } else{
+                sheetdata = exceldata.Sheets[sheetname]
+                jsonData = XLSX.utils.sheet_to_json(sheetdata, { header: 1 });
+
+            }
+
+            document.getElementById('selsheet').style.display = 'none'
+            let htmlcontent = '';
+
+            const headers = listToDict(jsonData[0]);
+
+            let addr = ``
+            Object.keys(headers).forEach((val)=>{
+                addr += `${val}: {{ ${val} }}\n`;
+            });
+            htmlcontent =`
+                <label>${ Object.keys(headers).length} columns present in the sheet.</label>
+                <div class="col-list" style="display: flex; flex-wrap: wrap;"> 
+                    ${  Object.keys(headers).map((val)=>'<div class="col-header">'+val+'</div>').join('')}
+                </div>
+                <label style="margin-top: 1.6rem;">Draft Lable layout</label>
+                <p style="margin: 4px 0;">You can customize your label layout by using placeholders like <strong>{{ your_column_name }}</strong> to insert column values. For example, add 'Pin: {{Pin}}' to include a PIN number in the label. {{Pin}} will be replaced with the corresponding column value, resulting in output like 'Pin: 202020'</p>
+                <textarea id="lablelayout" oninput="previewLables()" style="width: 100%; height: 160px; overflow: auto; margin: 4px 2px; resize: none; font-size: 1.2rem; padding: 6px 10px;">Address: \n${addr}</textarea>
+            `;
+
+            let configlable = document.getElementById('lableconfig')
+            configlable.style.display = 'block'
+            configlable.innerHTML = htmlcontent
+
+            previewLables();
+
+        }   
+
+        function printLables(){
+            const existingStyle = document.getElementById('pagePrintSize');
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+
+            let pg = document.getElementById('pageLayout')
+            let pageSize = ''
+            if(pg.value == 'custom'){
+                let pgw = document.getElementById('pageLayoutW').value
+                let pgh = document.getElementById('pageLayoutH').value
+                pageSize = `${pgw}cm ${pgh}cm`
+            } else {
+                pageSize = pg.value
+            }
+
+            const style = document.createElement('style');
+            style.id = 'pagePrintSize';
+            style.type = 'text/css';
+            
+            style.innerHTML = `
+                    @page {
+                        size: ${pageSize};
+                        margin:0;
+                    }
+                `;
+
+            // Append the new style to the head
+            document.head.appendChild(style);
+
+            window.print()
+        }
+
+        function saveToLocalStorage() {
+            const data = {};
+
+            data['pageLayout'] = document.getElementById('pageLayout').value;
+            data['pageLayoutW'] = document.getElementById('pageLayoutW').value;
+            data['pageLayoutH'] = document.getElementById('pageLayoutH').value;
+            data['marginTop'] = document.getElementById('marginTop').value;
+            data['marginBottom'] = document.getElementById('marginBottom').value;
+            data['marginLeft'] = document.getElementById('marginLeft').value;
+            data['marginRight'] = document.getElementById('marginRight').value;
+
+            data['labelsPerPg'] = document.getElementById('labelsPerPg').value;
+            data['labelsPerRow'] = document.getElementById('labelsPerRow').value;
+            data['columnGap'] = document.getElementById('columnGap').value;
+            data['rowGap'] = document.getElementById('rowGap').value;
+
+            data['fontSize'] = document.getElementById('fontSize').value;
+            data['fontColor'] = document.getElementById('fontColor').value;
+            data['fontStyle'] = document.getElementById('fontStyle').value;
+            data['lineHeight'] = document.getElementById('lineHeight').value;
+
+            // spec
+            data['set-halign'] = halign;
+            data['set-valign'] = valign;
+            data['showlableborder'] = document.getElementById('showlableborder').checked;
+            data['lablelayout'] = '';
+            if(document.querySelector("#lablelayout")){
+                data['lablelayout'] = document.querySelector("#lablelayout").value
+            }
+
+            localStorage.setItem('inputDataLableP', JSON.stringify(data));
+        }
+
+        function loadFromLocalStorage() {
+            const special = ['set-halign', 'set-valign', 'showlableborder', 'lablelayout']
+            const data = JSON.parse(localStorage.getItem('inputDataLableP'));
+
+            document.getElementById('pageLayout').value =  data['pageLayout'];
+            document.getElementById('pageLayoutW').value =  data['pageLayoutW'];
+            document.getElementById('pageLayoutH').value = data['pageLayoutH'];
+            document.getElementById('marginTop').value = data['marginTop'];
+            document.getElementById('marginBottom').value = data['marginBottom'];
+            document.getElementById('marginLeft').value = data['marginLeft'];
+            document.getElementById('marginRight').value = data['marginRight'];
+
+            document.getElementById('labelsPerPg').value = data['labelsPerPg'];
+            document.getElementById('labelsPerRow').value = data['labelsPerRow'];
+            document.getElementById('columnGap').value = data['columnGap'];
+            document.getElementById('rowGap').value = data['rowGap'];
+
+            document.getElementById('fontSize').value = data['fontSize'];
+            document.getElementById('fontColor').value = data['fontColor'];
+            document.getElementById('fontStyle').value = data['fontStyle'];
+            document.getElementById('lineHeight').value = data['lineHeight'];
+
+            halign = data['set-halign'] || 'left';
+            valign = data['set-valign'] || 'flex-start';
+            alignactive('halign', document.querySelector(`.set-halign .align-btn.${halign}`), halign)
+            alignactive('valign', document.querySelector(`.set-valign .align-btn-fill.${valign}`), valign)
+            document.getElementById('showlableborder').checked = data['showlableborder'] || false;
+            if(document.querySelector("#lablelayout") &&  data?.lablelayout){
+                document.querySelector("#lablelayout").value = data['lablelayout']
+            }
+
+        }
+
+        // Load values when the page loads
+        window.onload = loadFromLocalStorage;
+
+    </script>
+</body>
+
+</html>
